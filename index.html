@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dark Chocolate's Health-giving Benefits</title>
+<style>
+:root{
+  --bg:#f7f3ee; --paper:#ffffff; --ink:#2b1d14; --muted:#7a6656; --line:#e6dccf;
+  --choc:#5a3420; --choc2:#8a5a3b; --cocoa:#c98b5a; --accent:#2f7d5b; --accent-soft:#e3f2ea;
+  --wrong:#c0392b; --wrong-soft:#fbe7e4; --hl:#ffe98a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+button{font-family:inherit;cursor:pointer}
+
+/* ---------- start screen ---------- */
+#start{position:fixed;inset:0;display:flex;background:var(--bg);z-index:50;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.start-card{margin:auto}
+.start-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;max-width:620px;width:100%;padding:20px 24px;text-align:center;box-shadow:0 10px 30px rgba(60,30,10,.08)}
+.start-card h1{font-size:26px;margin:10px 0 4px;color:var(--choc)}
+.start-card p{color:var(--muted);line-height:1.6;margin:6px 0}
+.start-card ul{text-align:left;line-height:1.7;color:var(--ink);margin:18px auto 4px;border-top:1px dashed var(--line);padding-top:14px;max-width:460px;padding-left:20px}
+.btn{border:0;border-radius:10px;padding:12px 22px;font-size:16px;font-weight:600}
+.btn-primary{background:var(--choc);color:#fff}
+.btn-primary:hover{background:#432616}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.fs-opt{display:flex;gap:8px;align-items:center;justify-content:center;margin:8px 0;color:var(--muted);font-size:14px}
+
+/* ---------- top bar ---------- */
+#app{display:none;height:100%;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--choc);color:#fff;flex:0 0 auto}
+.topbar .title{font-weight:700;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .timer{font-variant-numeric:tabular-nums;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:8px;font-size:14px}
+.topbar button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:8px;padding:6px 12px;font-size:13px}
+.topbar button:hover{background:rgba(255,255,255,.25)}
+.topbar button.on{background:var(--hl);color:var(--ink)}
+
+/* ---------- split ---------- */
+.split{flex:1;display:flex;min-height:0}
+.pane{overflow:auto;min-width:0}
+#left{flex:0 0 55%;background:var(--paper);padding:24px 28px 40px}
+#right{flex:1;padding:22px 26px 60px}
+#divider{flex:0 0 10px;background:var(--line);cursor:col-resize;position:relative}
+#divider::after{content:"";position:absolute;left:3px;top:50%;width:4px;height:44px;margin-top:-22px;border-radius:2px;background:var(--choc2)}
+
+.passage h2{text-align:center;color:var(--choc);font-size:26px;margin:4px 0 14px}
+.passage p{line-height:1.75;font-size:16.5px;margin:0 0 16px;text-align:justify}
+.passage p b.lt{display:inline-block;background:var(--choc);color:#fff;border-radius:6px;width:24px;text-align:center;margin-right:6px;font-size:14px}
+.passage .notes{font-size:13.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px;line-height:1.6}
+figure{margin:6px 0 18px;text-align:center}
+figure svg{width:100%;max-width:520px;height:auto}
+figcaption{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px}
+mark.hl{background:var(--hl);padding:0 1px;border-radius:2px;cursor:pointer}
+
+/* ---------- questions ---------- */
+.qblock{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:20px}
+.qblock h3{margin:0 0 8px;color:var(--choc);font-size:17px}
+.qblock .ins{margin:4px 0;line-height:1.55;font-size:15px}
+.people{margin:10px 0 4px;padding:10px 14px;background:#faf6f1;border-radius:10px;font-size:15px;line-height:1.8}
+table.grid{border-collapse:collapse;width:100%;margin-top:12px;font-size:15px}
+table.grid th,table.grid td{border:1px solid var(--line);padding:8px 6px}
+table.grid th{background:#faf6f1;font-size:13px}
+table.grid td.q{text-align:left;padding-left:10px;line-height:1.45}
+table.grid td.c{text-align:center;width:36px}
+table.grid input[type=radio]{width:19px;height:19px;accent-color:var(--choc);cursor:pointer}
+tr.ok td.q{background:var(--accent-soft)}
+tr.bad td.q{background:var(--wrong-soft)}
+td.c.key{background:var(--accent-soft);outline:2px solid var(--accent);outline-offset:-2px}
+td.c.pick-bad{background:var(--wrong-soft);outline:2px solid var(--wrong);outline-offset:-2px}
+.gap{line-height:2.4;font-size:15.5px;margin:8px 0}
+.gap input{font-size:15px;padding:6px 10px;border:1px solid #cdbfae;border-radius:8px;width:170px;font-family:inherit}
+.gap input:focus{outline:2px solid var(--cocoa);border-color:transparent}
+.gap input.ok{background:var(--accent-soft);border-color:var(--accent)}
+.gap input.bad{background:var(--wrong-soft);border-color:var(--wrong)}
+.num{font-weight:700;margin-right:4px}
+.fb{display:none;font-size:13.5px;line-height:1.5;margin-top:6px;padding:8px 10px;border-radius:8px;background:#faf6f1;color:#4a3a2e}
+.show .fb{display:block}
+.fb b{color:var(--accent)}
+
+.submitbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#result{display:none;background:var(--paper);border:2px solid var(--accent);border-radius:14px;padding:18px 20px;margin-bottom:20px}
+#result .score{font-size:30px;font-weight:800;color:var(--accent)}
+#result p{margin:6px 0;line-height:1.55}
+.saving{font-size:13px;color:var(--muted)}
+
+#toast{position:fixed;left:50%;top:60px;transform:translateX(-50%);background:#fff4d6;border:1px solid #e0b84a;color:#5a3e00;padding:12px 18px;border-radius:10px;z-index:70;display:none;max-width:90%;box-shadow:0 6px 20px rgba(0,0,0,.15);font-size:15px}
+/* ---------- modal ---------- */
+#modal{position:fixed;inset:0;background:rgba(30,15,5,.45);display:none;align-items:center;justify-content:center;z-index:60;padding:16px}
+#modal .box{background:#fff;border-radius:14px;padding:22px;max-width:420px;width:100%;line-height:1.6}
+#modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+
+@media (max-width:820px){
+  .split{flex-direction:column;overflow:auto}
+  #left{flex:none;padding:18px 16px}
+  #right{padding:16px}
+  #divider{display:none}
+  .pane{overflow:visible}
+  .gap input{width:140px}
+  table.grid td.c{width:28px;padding:6px 2px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= START SCREEN ================= -->
+<div id="start">
+  <div class="start-card">
+    <svg viewBox="0 0 260 120" width="170" aria-hidden="true">
+      <!-- cocoa pod -->
+      <g transform="translate(40,10)">
+        <path d="M45 8 C80 10 92 50 80 80 C70 104 30 108 16 84 C2 60 10 6 45 8Z" fill="#c9792f"/>
+        <path d="M45 8 C58 30 60 70 48 104" stroke="#9b5420" stroke-width="3" fill="none"/>
+        <path d="M45 8 C30 30 26 70 34 102" stroke="#9b5420" stroke-width="3" fill="none"/>
+        <path d="M45 8 C70 30 76 66 66 96" stroke="#b0662a" stroke-width="2" fill="none"/>
+        <path d="M45 8 C22 28 14 60 22 90" stroke="#b0662a" stroke-width="2" fill="none"/>
+        <path d="M45 8 C47 0 52 -4 58 -4" stroke="#5a7a32" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </g>
+      <!-- chocolate bar -->
+      <g transform="translate(140,30) rotate(-8)">
+        <rect x="0" y="0" width="90" height="70" rx="6" fill="#5a3420"/>
+        <g fill="#6e4129" stroke="#47281a" stroke-width="2">
+          <rect x="6" y="6" width="22" height="16" rx="3"/><rect x="34" y="6" width="22" height="16" rx="3"/><rect x="62" y="6" width="22" height="16" rx="3"/>
+          <rect x="6" y="27" width="22" height="16" rx="3"/><rect x="34" y="27" width="22" height="16" rx="3"/><rect x="62" y="27" width="22" height="16" rx="3"/>
+          <rect x="6" y="48" width="22" height="16" rx="3"/><rect x="34" y="48" width="22" height="16" rx="3"/><rect x="62" y="48" width="22" height="16" rx="3"/>
+        </g>
+        <text x="45" y="-6" font-size="12" font-weight="700" fill="#5a3420" text-anchor="middle">70% cocoa</text>
+      </g>
+    </svg>
+    <h1>Dark Chocolate's Health-giving Benefits</h1>
+    <p>IELTS Reading Passage &middot; Questions 14&ndash;26</p>
+    <label class="fs-opt" id="fsOptRow"><input type="checkbox" id="fsPref" checked> Mở toàn màn hình (ghi nhớ lựa chọn này)</label>
+    <p id="fsNote" style="display:none;font-size:14px;background:#fff4d6;border-radius:8px;padding:8px 12px;color:#5a3e00">Để bài to hơn, con bấm phím <b>F11</b> (Windows) hoặc <b>Ctrl + Cmd + F</b> (Mac) để phóng to cả trình duyệt.</p>
+    <div id="who" style="display:none;margin:10px auto 4px;max-width:380px;text-align:left">
+      <label style="display:block;font-size:14px;color:#7a6656;margin-bottom:4px">Họ và tên của con</label>
+      <input id="stName" autocomplete="name" style="width:100%;font-size:16px;padding:9px 12px;border:1px solid #cdbfae;border-radius:8px;margin-bottom:8px;font-family:inherit">
+      <label style="display:block;font-size:14px;color:#7a6656;margin-bottom:4px">Lớp</label>
+      <input id="stClass" style="width:100%;font-size:16px;padding:9px 12px;border:1px solid #cdbfae;border-radius:8px;font-family:inherit">
+      <p id="whoErr" style="display:none;color:#c0392b;font-size:14px;margin:6px 0 0">Con nhập đủ họ tên và lớp rồi bấm Bắt đầu nhé.</p>
+    </div>
+    <button class="btn btn-primary" id="startBtn" type="button" onclick="startLesson()">Bắt đầu làm bài</button>
+    <ul>
+      <li>Bài đọc ở bên trái, câu hỏi ở bên phải. Con có thể kéo thanh ở giữa để đổi độ rộng.</li>
+      <li>Bấm nút <b>Highlight</b> rồi bôi đen chữ ở bài đọc, câu hỏi hoặc danh sách lựa chọn để đánh dấu từ khoá. Bấm vào chỗ đã tô để xoá.</li>
+      <li>Câu 23&ndash;26: chỉ viết <b>ONE WORD ONLY</b>, lấy đúng từ trong bài.</li>
+      <li>Làm xong, con bấm <b>Nộp bài</b> để xem điểm. Câu sai sẽ tô đỏ; con được <b>Làm lại</b> bao nhiêu lần cũng được.</li>
+      <li>Con làm bài ở màn hình này, không chuyển sang tab hay ứng dụng khác. Mỗi lần rời màn hình đều được ghi lại cho thầy.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app">
+  <div class="topbar">
+    <div class="title">Dark Chocolate's Health-giving Benefits</div>
+    <span class="timer">Lần <span id="attNo">1</span></span>
+    <span class="timer">Rời màn hình: <span id="outCnt">0</span></span>
+    <span class="timer" id="timer">00:00</span>
+    <button id="hlBtn" title="Bật/tắt bút tô">Highlight</button>
+    <button id="fsBtn">Toàn màn hình</button>
+  </div>
+
+  <div class="split">
+    <!-- ======== PASSAGE ======== -->
+    <div class="pane" id="left">
+      <div class="passage" id="passage">
+        <h2>Dark Chocolate's Health-giving Benefits</h2>
+
+        <p><b class="lt">A</b>Dark chocolate might be good for our health thanks to the microbes that live in our gut. New research suggests that beneficial bacteria that reside toward the end of our digestive tract ferment both the antioxidants* and the fiber in cocoa. In their deep-gut chemistry, these microbes create anti-inflammatory** compounds that have been linked to cardiovascular and other benefits from dark chocolate consumption. Other new research helps explain how some of cocoa's widespread health benefits, such as improving vascular function, may be linked, and good for even the young and the healthy.</p>
+
+        <p><b class="lt">B</b>Previous research suggested that cocoa components could be fermented, or chemically changed, to generate beneficial compounds. Daily consumption of dark chocolate or cocoa lowered people's blood pressure, according to a 2012 review of 20 different studies. John Finley, a professor of food sciences at Louisiana State University in the US, and his students took the work a step further to see what else the body might be getting from this common treat and how. To follow cocoa through its digestive journey, they created a lab-built gut, and discovered that microbes feasted on what was left of the cocoa after its passage through the simulated digestive system. They fermented these compounds, called flavonols, into smaller anti-inflammatory chemicals that could be absorbed into the bloodstream.</p>
+
+        <figure>
+          <svg viewBox="0 0 520 190" role="img" aria-label="Cocoa travels through the gut; microbes turn it into small anti-inflammatory compounds that enter the blood">
+            <rect x="0" y="0" width="520" height="190" rx="14" fill="#fbf4ec"/>
+            <!-- cocoa beans -->
+            <g transform="translate(26,64)">
+              <ellipse cx="22" cy="26" rx="20" ry="26" fill="#7a4526"/>
+              <path d="M22 2 C14 20 14 34 22 50" stroke="#4e2b17" stroke-width="2.5" fill="none"/>
+              <ellipse cx="54" cy="40" rx="14" ry="18" fill="#8d5330"/>
+              <path d="M54 23 C49 34 49 46 54 57" stroke="#4e2b17" stroke-width="2" fill="none"/>
+              <text x="36" y="86" font-size="13" text-anchor="middle" fill="#5a3420" font-weight="700">cocoa</text>
+            </g>
+            <path d="M104 100 L140 100" stroke="#b28a6a" stroke-width="3" marker-end="url(#ar)"/>
+            <!-- gut tube -->
+            <path d="M150 60 C190 30 230 30 250 60 C270 90 300 120 330 100 C355 84 350 50 330 46"
+                  stroke="#e8a7a0" stroke-width="34" fill="none" stroke-linecap="round"/>
+            <path d="M150 60 C190 30 230 30 250 60 C270 90 300 120 330 100 C355 84 350 50 330 46"
+                  stroke="#f6cdc7" stroke-width="22" fill="none" stroke-linecap="round"/>
+            <!-- microbes -->
+            <g>
+              <ellipse cx="200" cy="44" rx="9" ry="5" fill="#2f7d5b"/>
+              <ellipse cx="240" cy="52" rx="5" ry="5" fill="#3d9a70"/>
+              <ellipse cx="276" cy="94" rx="10" ry="5" fill="#2f7d5b" transform="rotate(30 276 94)"/>
+              <ellipse cx="312" cy="104" rx="5" ry="5" fill="#3d9a70"/>
+              <ellipse cx="340" cy="72" rx="9" ry="5" fill="#2f7d5b" transform="rotate(80 340 72)"/>
+              <path d="M209 44 q6 4 10 0" stroke="#2f7d5b" stroke-width="1.5" fill="none"/>
+              <path d="M286 98 q6 4 10 0" stroke="#2f7d5b" stroke-width="1.5" fill="none"/>
+            </g>
+            <text x="250" y="150" font-size="13" text-anchor="middle" fill="#5a3420" font-weight="700">gut microbes ferment flavonols</text>
+            <path d="M372 80 L410 80" stroke="#b28a6a" stroke-width="3" marker-end="url(#ar)"/>
+            <!-- blood vessel with small particles -->
+            <g transform="translate(420,40)">
+              <rect x="0" y="10" width="78" height="62" rx="31" fill="#c0392b"/>
+              <rect x="6" y="18" width="66" height="46" rx="23" fill="#e05a4a"/>
+              <circle cx="20" cy="34" r="4" fill="#ffe9a8"/><circle cx="36" cy="46" r="3" fill="#ffe9a8"/>
+              <circle cx="52" cy="32" r="4" fill="#ffe9a8"/><circle cx="60" cy="50" r="3" fill="#ffe9a8"/>
+              <text x="39" y="100" font-size="13" text-anchor="middle" fill="#5a3420" font-weight="700">bloodstream</text>
+            </g>
+            <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#b28a6a"/></marker></defs>
+          </svg>
+          <figcaption>Cocoa &rarr; microbes in the gut &rarr; small anti-inflammatory chemicals in the blood</figcaption>
+        </figure>
+
+        <p><b class="lt">C</b>This simulated bodily process seems plausible from both a biological and chemical standpoint, says Telmo Pereira of the Department of Cardiopneumology at the Superior College of Health Technology in Portugal. The next step, of course, will be more testing and looking for this transformation in humans, he notes. As Grace Farhat, a researcher in the Department of Dietetics, Nutrition and Biological Sciences at Queen Margaret University in Edinburgh, points out, we can't be entirely sure that each person's gut will undertake the same fermentation processes. 'The composition of bacteria will vary in different individuals,' she says. This will mean certain individuals may derive more benefits than others.'</p>
+
+        <p><b class="lt">D</b>These new findings, however, could help explain why dark chocolate improves vascular function and cardiovascular health in general. Other recent research has found that regular, moderate consumption of dark chocolate offers benefits even for the young and healthy. Pereira and colleagues found that healthy young adults who ate eight grams, about one small square of 70 percent cocoa chocolate each day for a month had 'an obvious improvement' in vascular function compared to a control group. Those eating the extra chocolate saw their blood flow increasing, on average, from 14 percent to 23 percent. The findings were published earlier this year and could have substantial implications for health on a broader population scale. 'If consuming dark chocolate in moderate quantities has the ability to decrease the risk of heart disease, it could have a role to play in reducing medical costs as well,' Farhat says.</p>
+
+        <figure>
+          <svg viewBox="0 0 520 170" role="img" aria-label="Heart and a bar chart showing blood flow rising from 14 percent to 23 percent">
+            <rect x="0" y="0" width="520" height="170" rx="14" fill="#fbf4ec"/>
+            <!-- heart -->
+            <g transform="translate(40,26)">
+              <path d="M60 112 C10 78 0 46 14 26 C28 6 54 10 60 32 C66 10 92 6 106 26 C120 46 110 78 60 112Z" fill="#c0392b"/>
+              <path d="M30 34 C36 24 46 22 52 28" stroke="#f2a59a" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <!-- pulse line -->
+              <path d="M8 66 L36 66 L44 50 L54 84 L64 40 L72 66 L112 66" stroke="#fff" stroke-width="3.5" fill="none" stroke-linejoin="round"/>
+            </g>
+            <!-- one small square -->
+            <g transform="translate(190,58)">
+              <rect x="0" y="0" width="40" height="40" rx="5" fill="#5a3420"/>
+              <rect x="6" y="6" width="28" height="28" rx="3" fill="#6e4129" stroke="#47281a" stroke-width="2"/>
+              <text x="20" y="62" font-size="12" text-anchor="middle" fill="#5a3420" font-weight="700">8 g / day</text>
+              <text x="20" y="78" font-size="12" text-anchor="middle" fill="#7a6656">for 1 month</text>
+            </g>
+            <!-- bars -->
+            <g transform="translate(300,20)">
+              <line x1="0" y1="120" x2="190" y2="120" stroke="#b28a6a" stroke-width="2"/>
+              <rect x="25" y="47" width="50" height="73" rx="4" fill="#c9a98c"/>
+              <rect x="115" y="0" width="50" height="120" rx="4" fill="#2f7d5b"/>
+              <text x="50" y="40" font-size="15" text-anchor="middle" font-weight="800" fill="#5a3420">14%</text>
+              <text x="140" y="22" font-size="15" text-anchor="middle" font-weight="800" fill="#ffffff">23%</text>
+              <text x="50" y="140" font-size="12" text-anchor="middle" fill="#7a6656">before</text>
+              <text x="140" y="140" font-size="12" text-anchor="middle" fill="#7a6656">after</text>
+            </g>
+          </svg>
+          <figcaption>Young, healthy adults: blood flow rose from 14% to 23% on average</figcaption>
+        </figure>
+
+        <p><b class="lt">E</b>Of course, 'chocolate is not a substitute for prescribed medications', Pereira notes. He suggests cocoa might work best for people who fall in the middle of the bell curve for cardiovascular health. 'If you have a patient with severely impaired vascular function, you cannot expect benefits from chocolate,' he says. And likewise, those who are already exceedingly healthy might not see much of a boost from extra cocoa. But both he and Finley suggest that cocoa could help in the effort to prevent heart disease. 'Dark chocolate could well be a preventative nutritional supplement to consider,' Pereira says. 'Or a preventative snack.'</p>
+
+        <p><b class="lt">F</b>Not all chocolate is created equal, however. Dark chocolate gets all the good publicity because it has relatively lower added sugar and fats than milk chocolate. "The benefits come from cocoa," Pereira notes &ndash; thus, "chocolates with the highest proportion of cocoa are better." Even when it comes to pure cocoa, which can be used for a hot beverage or added as a topping, he acknowledges that no one knows the ideal amount. Even the darkest of the dark chocolates 'must be consumed in moderation to avoid weight gain', he notes. Finley and his team went straight for the pure, unsweetened cocoa to test its impact on gut microbes. Nevertheless, each type produced slightly different results. The researchers sent three types of cocoa down the lab-rigged digestive path: lightly processed, moderately processed and Dutch-processed. The more mildly treated the cocoa, the more it produced beneficial compounds in these experiments. Farhat also noted that likewise some brands of dark chocolate are low in antioxidants due to the methods of manufacturing.</p>
+
+        <figure>
+          <svg viewBox="0 0 520 160" role="img" aria-label="Three cups of cocoa powder: lightly processed, moderately processed, Dutch-processed">
+            <rect x="0" y="0" width="520" height="160" rx="14" fill="#fbf4ec"/>
+            <g transform="translate(40,30)">
+              <path d="M0 40 L100 40 L88 92 Q50 104 12 92Z" fill="#e9dccd" stroke="#b9a48f" stroke-width="2"/>
+              <path d="M8 40 Q50 6 92 40Z" fill="#a8693c"/>
+              <text x="50" y="122" font-size="13" text-anchor="middle" fill="#5a3420" font-weight="700">lightly processed</text>
+            </g>
+            <g transform="translate(210,30)">
+              <path d="M0 40 L100 40 L88 92 Q50 104 12 92Z" fill="#e9dccd" stroke="#b9a48f" stroke-width="2"/>
+              <path d="M8 40 Q50 6 92 40Z" fill="#7d4a28"/>
+              <text x="50" y="122" font-size="13" text-anchor="middle" fill="#5a3420" font-weight="700">moderately processed</text>
+            </g>
+            <g transform="translate(380,30)">
+              <path d="M0 40 L100 40 L88 92 Q50 104 12 92Z" fill="#e9dccd" stroke="#b9a48f" stroke-width="2"/>
+              <path d="M8 40 Q50 6 92 40Z" fill="#3e2214"/>
+              <text x="50" y="122" font-size="13" text-anchor="middle" fill="#5a3420" font-weight="700">Dutch-processed</text>
+            </g>
+          </svg>
+          <figcaption>Three types of cocoa tested in the lab-built gut</figcaption>
+        </figure>
+
+        <p><b class="lt">G</b>With the high levels of antioxidants, cocoa might also be good for the gut itself. 'It appears that if you were consuming some cocoas, it would actually stimulate the production of healthier microbes in the colon,' Finley says. Additionally, the microbes broke down the undigested fiber in the cocoa. 'The bottom line is that now I put cocoa on my oatmeal,' Finley says. Although his wife dismisses the non-traditional topping as a bit weird, Finley has science on his side for his breakfast combo: 'The anti-inflammatory compounds combined with dietary fiber is a synergistic effect &ndash; one and one makes three' in this case, he says. And combining cocoa with additional sources of dietary fiber might boost the effect even more. As Finley suggests, 'maybe chocolate-covered black beans?'</p>
+
+        <figure>
+          <svg viewBox="0 0 520 170" role="img" aria-label="A bowl of oatmeal with cocoa powder sprinkled on top">
+            <rect x="0" y="0" width="520" height="170" rx="14" fill="#fbf4ec"/>
+            <!-- spoon -->
+            <g transform="translate(330,24) rotate(25)">
+              <ellipse cx="20" cy="18" rx="16" ry="22" fill="#cfd5da" stroke="#9aa3aa" stroke-width="2"/>
+              <rect x="16" y="38" width="8" height="80" rx="4" fill="#cfd5da" stroke="#9aa3aa" stroke-width="2"/>
+            </g>
+            <!-- bowl -->
+            <ellipse cx="230" cy="80" rx="120" ry="26" fill="#efe1c6"/>
+            <g fill="#e5d0a8">
+              <circle cx="170" cy="78" r="9"/><circle cx="196" cy="70" r="8"/><circle cx="226" cy="76" r="10"/>
+              <circle cx="258" cy="70" r="8"/><circle cx="286" cy="80" r="9"/><circle cx="208" cy="88" r="7"/><circle cx="252" cy="90" r="8"/>
+            </g>
+            <!-- cocoa dusting -->
+            <g fill="#6e3d22">
+              <circle cx="200" cy="74" r="2"/><circle cx="214" cy="80" r="2.5"/><circle cx="230" cy="70" r="2"/><circle cx="244" cy="82" r="2.5"/>
+              <circle cx="258" cy="76" r="2"/><circle cx="222" cy="88" r="2"/><circle cx="236" cy="78" r="3"/><circle cx="270" cy="84" r="2"/>
+              <circle cx="186" cy="82" r="2"/><circle cx="250" cy="68" r="2"/><circle cx="228" cy="62" r="2"/><circle cx="206" cy="66" r="1.8"/>
+            </g>
+            <path d="M110 80 Q118 150 230 152 Q342 150 350 80 Z" fill="#3f6e8c"/>
+            <path d="M110 80 Q230 112 350 80" stroke="#2c5570" stroke-width="3" fill="none"/>
+            <path d="M140 110 Q230 130 320 110" stroke="#6e98b4" stroke-width="3" fill="none" opacity=".6"/>
+            <!-- cocoa jar shaking -->
+            <g transform="translate(400,20)">
+              <rect x="0" y="16" width="56" height="70" rx="8" fill="#7a4526"/>
+              <rect x="-4" y="6" width="64" height="14" rx="4" fill="#a8693c"/>
+              <rect x="8" y="38" width="40" height="28" rx="4" fill="#f4e6d4"/>
+              <text x="28" y="57" font-size="9.5" text-anchor="middle" font-weight="800" fill="#5a3420">COCOA</text>
+            </g>
+          </svg>
+          <figcaption>Finley's breakfast: cocoa on oatmeal &ndash; cocoa plus dietary fiber</figcaption>
+        </figure>
+
+        <div class="notes">* antioxidants: substances that prevent harmful chemical reactions<br>
+        ** anti-inflammatory: reducing or preventing a condition in which a part of the body becomes red, swollen and/or painful</div>
+      </div>
+    </div>
+
+    <div id="divider" title="Kéo để đổi độ rộng"></div>
+
+    <!-- ======== QUESTIONS ======== -->
+    <div class="pane" id="right">
+      <div id="result"></div>
+
+      <div class="qblock">
+        <h3>Questions 14&ndash;18</h3>
+        <p class="ins">Reading Passage 2 has seven sections, <b>A&ndash;G</b>.</p>
+        <p class="ins">Which section contains the following information?</p>
+        <p class="ins">Write the correct letter, <b>A&ndash;G</b>, in boxes 14&ndash;18 on your answer sheet.</p>
+        <table class="grid" id="t1"></table>
+      </div>
+
+      <div class="qblock">
+        <h3>Questions 19&ndash;22</h3>
+        <p class="ins">Choose the correct person, <b>A&ndash;C</b>, for each statement.</p>
+        <p class="ins">You may choose any person more than once.</p>
+        <div class="people"><b>List of People</b><br>A&nbsp;&nbsp;John Finley<br>B&nbsp;&nbsp;Telmo Pereira<br>C&nbsp;&nbsp;Grace Farhat</div>
+        <table class="grid" id="t2"></table>
+      </div>
+
+      <div class="qblock" id="gapblock">
+        <h3>Questions 23&ndash;26</h3>
+        <p class="ins">Complete the sentences.</p>
+        <p class="ins">Write <b>ONE WORD ONLY</b> from the text for each answer.</p>
+      </div>
+
+      <div class="submitbar">
+        <button class="btn btn-primary" id="submitBtn">Nộp bài</button>
+        <button class="btn btn-primary" id="retryBtn" style="display:none">Làm lại</button>
+        <span class="saving" id="saving"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="modal"><div class="box">
+  <div id="modalText"></div>
+  <div class="row"><button class="btn btn-ghost" id="mNo">Làm tiếp</button><button class="btn btn-primary" id="mYes">Nộp luôn</button></div>
+</div></div>
+
+<script>
+/* =========================================================
+   CẤU HÌNH – thầy dán link Web App Apps Script vào đây
+   ========================================================= */
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbyOPPZarEErAzWbo7H9UbaJYBxFil-8K2EOOp5wSckMJVv9H9p85a7ol7TF3ORUZr0p/exec";          // ví dụ: "https://script.google.com/macros/s/XXXX/exec"
+var LESSON_ID = "Reading – Dark Chocolate's Health-giving Benefits (Q14-26)";
+
+/* ---------------- DATA ---------------- */
+function K(x){ var t=atob(x); return t.slice(1,-1); }
+var Q1 = [
+  {n:14, t:"a reference to the different kinds of cocoa used to produce chocolate", a:K("a0Yj")},
+  {n:15, t:"an explanation regarding chemicals produced from digesting cocoa which reduce inflammation", a:K("a0Ij")},
+  {n:16, t:"a reference to people whose health may not be improved by eating chocolate", a:K("a0Uj")},
+  {n:17, t:"an example of an unconventional use of cocoa", a:K("a0cj")},
+  {n:18, t:"a reference to the differences in people's digestive processes", a:K("a0Mj")}
+];
+var Q2 = [
+  {n:19, t:"Health benefits may be gained by consuming extra fibre together with cocoa.", a:K("a0Ej")},
+  {n:20, t:"Healthcare expenses could be reduced by eating dark chocolate.", a:K("a0Mj")},
+  {n:21, t:"Chocolate cannot be used to replace drugs.", a:K("a0Ij")},
+  {n:22, t:"It is unclear exactly how much cocoa is good for health.", a:K("a0Ij")}
+];
+var Q3 = [
+  {n:23, pre:"Even for young and healthy people, eating dark chocolate regularly and in moderation provides", post:".", a:[K("a2JlbmVmaXRzIw==")]},
+  {n:24, pre:"Dark chocolate is preferred as it is not as sweet and has fewer", post:".", a:[K("a2ZhdHMj")]},
+  {n:25, pre:"Due to the way they are produced, certain brands of chocolate have only a limited amount of", post:"in the cocoa.", a:[K("a2FudGlveGlkYW50cyM=")]},
+  {n:26, pre:"During the digestion process, microbes break down", post:"that has been undigested.", a:[K("a2ZpYmVyIw=="),K("a2ZpYnJlIw==")]}
+];
+var TOTAL = Q1.length + Q2.length + Q3.length;
+
+/* ---------------- BUILD QUESTIONS ---------------- */
+function buildGrid(id, qs, letters){
+  var h = '<tr><th>Question</th>' + letters.map(function(l){return '<th>'+l+'</th>';}).join('') + '</tr>';
+  qs.forEach(function(q){
+    h += '<tr id="row'+q.n+'"><td class="q"><span class="num">'+q.n+'</span>'+q.t+'<div class="fb" id="fb'+q.n+'"></div></td>';
+    letters.forEach(function(l){
+      h += '<td class="c" data-q="'+q.n+'" data-l="'+l+'"><input type="radio" name="q'+q.n+'" value="'+l+'" aria-label="'+q.n+' '+l+'"></td>';
+    });
+    h += '</tr>';
+  });
+  document.getElementById(id).innerHTML = h;
+}
+buildGrid('t1', Q1, ['A','B','C','D','E','F','G']);
+buildGrid('t2', Q2, ['A','B','C']);
+(function(){
+  var box = document.getElementById('gapblock');
+  Q3.forEach(function(q){
+    var d = document.createElement('div');
+    d.className = 'gap'; d.id = 'row'+q.n;
+    d.innerHTML = '<span class="num">'+q.n+'</span>'+q.pre+' <input id="g'+q.n+'" autocomplete="off" spellcheck="false" placeholder="Question '+q.n+'"> '+q.post+'<div class="fb" id="fb'+q.n+'"></div>';
+    box.appendChild(d);
+  });
+})();
+// click the whole cell selects the radio
+document.querySelectorAll('td.c').forEach(function(td){
+  td.addEventListener('click', function(e){ if(done || !window.getSelection().isCollapsed) return; var r=td.querySelector('input'); r.checked=true; saveDraft(); });
+});
+document.querySelectorAll('#gapblock input').forEach(function(i){ i.addEventListener('input', saveDraft); });
+
+/* ---------------- SCORM 1.2 ---------------- */
+var API = null;
+function findAPI(win){ var n=0; while(win && !win.API && win.parent && win.parent!==win && n<10){ n++; win=win.parent; } return win ? win.API : null; }
+try{ API = findAPI(window) || (window.opener ? findAPI(window.opener) : null); }catch(e){ API=null; }
+function sGet(k){ try{ return API ? API.LMSGetValue(k) : ""; }catch(e){ return ""; } }
+function sSet(k,v){ try{ if(API) API.LMSSetValue(k, String(v)); }catch(e){} }
+function sCommit(){ try{ if(API) API.LMSCommit(""); }catch(e){} }
+if(API){ try{ API.LMSInitialize(""); }catch(e){} }
+var studentName = sGet('cmi.core.student_name') || '';
+var studentId   = sGet('cmi.core.student_id') || '';
+if(API && sGet('cmi.core.lesson_status')==='not attempted'){ sSet('cmi.core.lesson_status','incomplete'); sCommit(); }
+
+/* ---------------- draft save / restore ---------------- */
+function collect(){
+  var ans = {};
+  Q1.concat(Q2).forEach(function(q){ var r=document.querySelector('input[name=q'+q.n+']:checked'); ans[q.n]= r? r.value : ''; });
+  Q3.forEach(function(q){ ans[q.n] = document.getElementById('g'+q.n).value.trim(); });
+  return ans;
+}
+function persist(o){
+  var str=JSON.stringify(o);
+  if(str.length<3800) sSet('cmi.suspend_data', str);
+  try{ localStorage.setItem('dc_draft', str); }catch(e){}
+}
+function saveDraft(){
+  if(done) return;
+  persist({ans:collect(), t:elapsed, attempt:attempt, best:best, out:outCount, fs:fsExitCount});
+}
+function restoreDraft(){
+  var raw = sGet('cmi.suspend_data');
+  if(!raw){ try{ raw = localStorage.getItem('dc_draft'); }catch(e){} }
+  if(!raw) return;
+  try{
+    var d = JSON.parse(raw);
+    elapsed = d.t || 0; attempt = d.attempt || 1; best = d.best || 0; outCount = d.out || 0; fsExitCount = d.fs || 0;
+    Object.keys(d.ans||{}).forEach(function(n){
+      var v = d.ans[n]; if(!v) return;
+      var g = document.getElementById('g'+n);
+      if(g){ g.value=v; } else { var r=document.querySelector('input[name=q'+n+'][value="'+v+'"]'); if(r) r.checked=true; }
+    });
+  }catch(e){}
+}
+
+/* ---------------- timer ---------------- */
+var elapsed = 0, tick = null;
+function fmt(s){ var m=Math.floor(s/60), x=s%60; return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+function startTimer(){ tick = setInterval(function(){ elapsed++; document.getElementById('timer').textContent=fmt(elapsed); if(elapsed%15===0){ saveDraft(); sCommit(); } },1000); }
+
+/* ---------------- full screen (remembered) ---------------- */
+function getFsPref(){ try{ var v=localStorage.getItem('scorm_fs_pref'); return v===null ? true : v==='1'; }catch(e){ return true; } }
+function setFsPref(on){ try{ localStorage.setItem('scorm_fs_pref', on?'1':'0'); }catch(e){} }
+/* Canvas puts the lesson inside iframes. Try the highest same-origin frame
+   that is allowed to go full screen; if none is allowed, fall back gracefully. */
+function fsDocs(){
+  var docs=[], w=window, n=0;
+  while(w && n<10){
+    try{ var d=w.document; if(d.fullscreenEnabled||d.webkitFullscreenEnabled) docs.push(d); }catch(e){ break; }
+    try{ if(w===w.parent) break; w=w.parent; }catch(e){ break; }
+    n++;
+  }
+  return docs; // [self ... highest]
+}
+function fsTargetDoc(){ var d=fsDocs(); return d.length ? d[d.length-1] : null; }
+var FS_OK = !!fsTargetDoc();
+function isFs(){
+  var w=window, n=0;
+  while(w && n<10){
+    try{ var d=w.document; if(d.fullscreenElement||d.webkitFullscreenElement) return true; }catch(e){ break; }
+    try{ if(w===w.parent) break; w=w.parent; }catch(e){ break; } n++;
+  }
+  return false;
+}
+function enterFs(){
+  var d=fsTargetDoc(); if(!d) return;
+  var el=d.documentElement, f=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(f){ try{ var p=f.call(el); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+}
+function exitFs(){
+  var w=window, n=0;
+  while(w && n<10){
+    try{ var d=w.document; if(d.fullscreenElement||d.webkitFullscreenElement){ var f=d.exitFullscreen||d.webkitExitFullscreen; try{ var p=f.call(d); if(p&&p.catch) p.catch(function(){}); }catch(x){} return; } }catch(e){ break; }
+    try{ if(w===w.parent) break; w=w.parent; }catch(e){ break; } n++;
+  }
+}
+function updFsBtn(){ try{ document.getElementById('fsBtn').textContent = isFs() ? 'Thoát toàn màn hình' : 'Toàn màn hình'; }catch(e){} }
+(function(){
+  try{
+    fsDocs().forEach(function(d){
+      d.addEventListener('fullscreenchange', function(){ updFsBtn(); onFsChange(); });
+      d.addEventListener('webkitfullscreenchange', function(){ updFsBtn(); onFsChange(); });
+    });
+  }catch(e){}
+  if(!FS_OK){
+    document.getElementById('fsOptRow').style.display='none';
+    document.getElementById('fsBtn').style.display='none';
+    document.getElementById('fsNote').style.display='block';
+  }
+  try{ document.getElementById('fsPref').checked = getFsPref(); }catch(e){}
+  document.getElementById('fsBtn').onclick = function(){
+    if(isFs()){ exitFs(); setFsPref(false); } else { enterFs(); setFsPref(true); }
+  };
+})();
+
+var NO_LMS = !API;
+if(NO_LMS){
+  document.getElementById('who').style.display='block';
+  try{ document.getElementById('stName').value=localStorage.getItem('st_name')||''; document.getElementById('stClass').value=localStorage.getItem('st_class')||''; }catch(e){}
+}
+function startLesson(){
+  if(NO_LMS){
+    var nm=document.getElementById('stName').value.trim(), cl=document.getElementById('stClass').value.trim();
+    if(!nm || !cl){ document.getElementById('whoErr').style.display='block'; return; }
+    studentName=nm; studentId=cl;
+    try{ localStorage.setItem('st_name',nm); localStorage.setItem('st_class',cl); }catch(e){}
+  }
+  // show the lesson first, so nothing below can block the button
+  document.getElementById('start').style.display='none';
+  document.getElementById('app').style.display='flex';
+  try{
+    var want = FS_OK && document.getElementById('fsPref').checked;
+    if(FS_OK) setFsPref(want);
+    if(want) enterFs();
+  }catch(e){}
+  try{ restoreDraft(); }catch(e){}
+  try{
+    document.getElementById('timer').textContent=fmt(elapsed);
+    document.getElementById('outCnt').textContent=outCount;
+    document.getElementById('attNo').textContent=attempt;
+  }catch(e){}
+  started=true;
+  try{ startTimer(); }catch(e){}
+}
+document.getElementById('startBtn').onclick = startLesson;
+
+/* ---------------- resizable divider ---------------- */
+(function(){
+  var dv=document.getElementById('divider'), left=document.getElementById('left'), drag=false;
+  function move(x){ var w=document.querySelector('.split').getBoundingClientRect(); var pct=Math.min(75,Math.max(30,(x-w.left)/w.width*100)); left.style.flex='0 0 '+pct+'%'; }
+  dv.addEventListener('mousedown',function(e){drag=true;e.preventDefault();});
+  dv.addEventListener('touchstart',function(){drag=true;},{passive:true});
+  window.addEventListener('mousemove',function(e){ if(drag) move(e.clientX); });
+  window.addEventListener('touchmove',function(e){ if(drag) move(e.touches[0].clientX); },{passive:true});
+  window.addEventListener('mouseup',function(){drag=false;});
+  window.addEventListener('touchend',function(){drag=false;});
+})();
+
+/* ---------------- highlighter ---------------- */
+var hlOn=false;
+document.getElementById('hlBtn').onclick=function(){ hlOn=!hlOn; this.classList.toggle('on',hlOn); };
+var HL_ZONES=[document.getElementById('left'), document.getElementById('right')];
+function inZone(node){ return HL_ZONES.some(function(z){ return z.contains(node); }); }
+HL_ZONES.forEach(function(z){
+  z.addEventListener('mouseup', doHl);
+  z.addEventListener('touchend', function(){ setTimeout(doHl,50); });
+  z.addEventListener('click', function(e){
+    var m=e.target.closest ? e.target.closest('mark.hl') : null;
+    if(m && window.getSelection().isCollapsed){ var p=m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize(); }
+  });
+});
+function skipNode(n){
+  var el=n.parentNode;
+  return !el || el.closest('svg,input,button,textarea,#result,.submitbar,mark.hl') ;
+}
+function doHl(){
+  if(!hlOn) return;
+  var sel=window.getSelection(); if(!sel || sel.isCollapsed || !sel.rangeCount) return;
+  var rg=sel.getRangeAt(0);
+  if(!inZone(rg.commonAncestorContainer)) { sel.removeAllRanges(); return; }
+  var root=rg.commonAncestorContainer.nodeType===1?rg.commonAncestorContainer:rg.commonAncestorContainer.parentNode;
+  var walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes=[];
+  while(walker.nextNode()){ var t=walker.currentNode; if(rg.intersectsNode(t) && t.nodeValue.trim() && !skipNode(t)) nodes.push(t); }
+  if(root.nodeType===3 || (rg.startContainer===rg.endContainer && rg.startContainer.nodeType===3)){
+    nodes=[rg.startContainer].filter(function(t){ return !skipNode(t); });
+  }
+  nodes.forEach(function(n){
+    var s = n===rg.startContainer ? rg.startOffset : 0, e2 = n===rg.endContainer ? rg.endOffset : n.length;
+    if(e2<=s) return;
+    var r2=document.createRange(); r2.setStart(n,s); r2.setEnd(n,e2);
+    var mk=document.createElement('mark'); mk.className='hl'; try{ r2.surroundContents(mk);}catch(x){}
+  });
+  sel.removeAllRanges();
+}
+
+/* ---------------- leave-screen tracking ---------------- */
+var outCount=0, fsExitCount=0, lastOut=0, isOut=false, started=false;
+function markOut(){
+  if(!started || done) return;
+  var now=Date.now(); if(isOut || now-lastOut<1500) return;
+  isOut=true; lastOut=now; outCount++;
+  document.getElementById('outCnt').textContent=outCount;
+  saveDraft();
+}
+function markBack(){
+  if(!isOut) return; isOut=false;
+  if(!started || done) return;
+  toast('Con vừa rời khỏi màn hình làm bài. Số lần rời màn hình: <b>'+outCount+'</b>. Thầy sẽ xem số lần này.');
+}
+document.addEventListener('visibilitychange',function(){ if(document.hidden) markOut(); else markBack(); });
+window.addEventListener('blur',markOut);
+window.addEventListener('focus',markBack);
+function onFsChange(){ if(FS_OK && started && !done && !isFs() && getFsPref()){ fsExitCount++; saveDraft(); } }
+function toast(html){
+  var t=document.getElementById('toast'); t.innerHTML=html; t.style.display='block';
+  clearTimeout(toast._t); toast._t=setTimeout(function(){ t.style.display='none'; },5000);
+}
+
+/* ---------------- submit / retry ---------------- */
+var done=false, attempt=1, best=0;
+function norm(s){ return s.toLowerCase().replace(/[^a-z]/g,''); }
+document.getElementById('submitBtn').onclick=function(){
+  if(done) return;
+  var a=collect(), blank=Object.keys(a).filter(function(k){return !a[k];});
+  if(blank.length){
+    document.getElementById('modalText').innerHTML='Con còn <b>'+blank.length+'</b> câu chưa làm (câu '+blank.join(', ')+'). Con có muốn nộp bài luôn không?';
+    document.getElementById('modal').style.display='flex';
+  } else grade();
+};
+document.getElementById('mNo').onclick=function(){ document.getElementById('modal').style.display='none'; };
+document.getElementById('mYes').onclick=function(){ document.getElementById('modal').style.display='none'; grade(); };
+document.getElementById('retryBtn').onclick=retry;
+
+function grade(){
+  done=true; clearInterval(tick);
+  var a=collect(), score=0, detail=[], per={};
+  Q1.concat(Q2).forEach(function(q){
+    var ok = a[q.n]===q.a; if(ok) score++;
+    var row=document.getElementById('row'+q.n); row.classList.add(ok?'ok':'bad');
+    if(!ok && a[q.n]) row.querySelector('td.c[data-l="'+a[q.n]+'"]').classList.add('pick-bad');
+    detail.push(q.n+':'+(a[q.n]||'-')+(ok?'✓':'✗')); per[q.n]=(a[q.n]||'-')+(ok?' ✓':' ✗');
+  });
+  document.querySelectorAll('input[type=radio]').forEach(function(r){ r.disabled=true; });
+  Q3.forEach(function(q){
+    var ok = q.a.some(function(x){ return norm(x)===norm(a[q.n]); }); if(ok) score++;
+    var inp=document.getElementById('g'+q.n); inp.classList.add(ok?'ok':'bad'); inp.readOnly=true;
+    detail.push(q.n+':'+(a[q.n]||'-')+(ok?'✓':'✗')); per[q.n]=(a[q.n]||'-')+(ok?' ✓':' ✗');
+  });
+
+  var pct=Math.round(score/TOTAL*100);
+  if(pct>best) best=pct;
+  var msg = score===TOTAL ? 'Con làm đúng hết rồi. Rất tốt!' :
+            'Câu tô đỏ là câu con làm sai. Con đọc lại bài, tìm lại chỗ có thông tin rồi bấm <b>Làm lại</b> để sửa nhé.';
+  var r=document.getElementById('result');
+  r.innerHTML='<div class="score">'+score+' / '+TOTAL+'</div><p>'+msg+'</p>'+
+    '<p style="color:#7a6656;font-size:14px">Lần làm thứ '+attempt+' &middot; Thời gian: '+fmt(elapsed)+' &middot; Số lần rời màn hình: '+outCount+' &middot; Điểm cao nhất: '+Math.round(best*TOTAL/100)+' / '+TOTAL+'</p>';
+  r.style.display='block';
+  document.getElementById('right').scrollTop=0;
+  document.getElementById('submitBtn').style.display='none';
+  document.getElementById('retryBtn').style.display = score===TOTAL ? 'none' : 'inline-block';
+
+  // SCORM: Canvas keeps the best score
+  sSet('cmi.core.score.min',0); sSet('cmi.core.score.max',100); sSet('cmi.core.score.raw',best);
+  sSet('cmi.core.lesson_status', best>=50 ? 'passed' : 'failed');
+  var hh=Math.floor(elapsed/3600), mm=Math.floor(elapsed%3600/60), ss=elapsed%60;
+  sSet('cmi.core.session_time', (hh<10?'000':'00')+hh+':'+(mm<10?'0':'')+mm+':'+(ss<10?'0':'')+ss);
+  var sentAttempt=attempt, sentOut=outCount, sentFs=fsExitCount, sentTime=fmt(elapsed);
+  persist({ans:{}, t:0, attempt:attempt+1, best:best, out:0, fs:0});
+  sCommit();
+
+  // Google Sheets
+  if(SHEET_URL){
+    var payload={lesson:LESSON_ID, name:studentName, id:studentId, attempt:sentAttempt, score:score, total:TOTAL, percent:pct,
+                 best:best, time:sentTime, outCount:sentOut, fsExit:sentFs, answers:detail.join(' | '), per:per,
+                 submittedAt:new Date().toISOString()};
+    var sv=document.getElementById('saving'); sv.textContent='Đang lưu kết quả...';
+    fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+      .then(function(){ sv.textContent='Đã gửi kết quả lần '+sentAttempt+' cho thầy.'; })
+      .catch(function(){ sv.textContent='Chưa gửi được kết quả lên bảng điểm, con báo thầy nhé.'; });
+  }
+}
+
+function retry(){
+  done=false; attempt++; elapsed=0; outCount=0; fsExitCount=0;
+  document.getElementById('outCnt').textContent='0';
+  document.getElementById('timer').textContent=fmt(0);
+  document.querySelectorAll('tr.ok,tr.bad').forEach(function(r){ r.classList.remove('ok','bad'); });
+  document.querySelectorAll('td.pick-bad').forEach(function(c){ c.classList.remove('pick-bad'); });
+  document.querySelectorAll('input[type=radio]').forEach(function(r){ r.disabled=false; });
+  Q3.forEach(function(q){ var i=document.getElementById('g'+q.n); i.readOnly=false; i.classList.remove('ok','bad'); });
+  document.getElementById('result').style.display='none';
+  document.getElementById('retryBtn').style.display='none';
+  document.getElementById('submitBtn').style.display='inline-block';
+  document.getElementById('saving').textContent='';
+  document.getElementById('attNo').textContent=attempt;
+  saveDraft(); startTimer();
+}
+window.addEventListener('beforeunload', function(){ if(!done) saveDraft(); sCommit(); try{ if(API) API.LMSFinish(""); }catch(e){} });
+</script>
+</body>
+</html>
